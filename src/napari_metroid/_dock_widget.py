@@ -6,7 +6,6 @@ see: https://napari.org/docs/dev/plugins/hook_specifications.html
 
 Replace code below according to your needs.
 """
-# from napari_plugin_engine import napari_hook_implementation
 from ._auto_mask import create_cell_mask
 from ._mess import segment
 from ._get_signals import get_ROIs_average_over_time
@@ -15,11 +14,9 @@ from ._bssd import denoise
 from magicgui import magicgui
 from qtpy import QtWidgets
 from qtpy.QtWidgets import QMainWindow
-# from matplotlib import gridspec
-from ._widgets import Ui_dock_widget, Canvas_Widget#, Create_Mask_Widget, MESS_Widget
+from ._widgets import Ui_dock_widget, Canvas_Widget
 from qtpy import uic
 from pathlib import Path
-from magicgui.widgets import Container
 
 import napari
 
@@ -43,18 +40,8 @@ class MainInterface(QMainWindow):
         self.viewer = napari_viewer
         self.dock_widget_flag = False
 
-        # self.create_mask_widget = Create_Mask_Widget(self,self.viewer,
-        #                                              create_cell_mask,
-        #                                              param_options={'auto_call': False})
         self.create_mask_widget =magicgui(create_cell_mask,auto_call=True)
-        # self.mess_widget = MESS_Widget(self,self.viewer,
-        #                                              segment,
-        #                                              param_options={'auto_call': False,
-        #                                                             'n_ROIs_in':{'label': 'Number of inner ROIs:',
-        #                                                                          'min': 4,
-        #                                                                          'step': 2},
-        #                                                             'n_ROIs_out':{'label': 'Number of outer ROIs:',
-        #                                                                           'min': 2}})
+
         self.mess_widget = magicgui(segment,
                                     auto_call=True,
                                     n_ROIs_in={'label': 'Number of inner ROIs:',
@@ -85,7 +72,7 @@ class MainInterface(QMainWindow):
                 self.get_signals_widget.frame_rate.show()
             else:
                 self.get_signals_widget.frame_rate.hide()
-            # self.get_signals_widget.update()
+
 
 
         self.remove_photob_widget = Ui_dock_widget(self,self.viewer,photob_remove,
@@ -102,7 +89,7 @@ class MainInterface(QMainWindow):
                 self.remove_photob_widget.t_sig_end.show()
             else:
                 self.remove_photob_widget.t_sig_end.hide()
-            # self.remove_photob_widget.update()
+
 
         bssd_options = ['ICA', 'PCA', 'wICA', 'wPCA']
         wavelet_options = ['Haar','dmey']
@@ -122,9 +109,6 @@ class MainInterface(QMainWindow):
         self.manual_sel_canvas_widget = Canvas_Widget(self, self.viewer, True)
         self.manual_sel_canvas_widget.setObjectName('Source Selection')
 
-        # self.canvas_widget_source_selection = Canvas_Widget(self.viewer)
-        # self.canvas_widget_source_selection.setObjectName('Select Signal and hit Enter')
-
         # List of widgets and list of docked widgets
         self.widgets_list = [self.create_mask_widget, self.mess_widget,
                              self.get_signals_widget, self.remove_photob_widget,
@@ -138,8 +122,8 @@ class MainInterface(QMainWindow):
             widget = self.main_gui.horizontalLayout.layout().itemAt(i).widget()
             if isinstance(widget,QtWidgets.QToolButton):
                 widget.clicked.connect(self._update_dock_widgets)
-                print("Connected item ", widget.objectName(),
-                      "with btn_id number ", i, "to function")
+                # print("Connected item ", widget.objectName(),
+                #       "with btn_id number ", i, "to function")
         # instance to dock_widgets
         self.dw_instance = None
         # instance to canvas dock_widgets
@@ -160,7 +144,6 @@ class MainInterface(QMainWindow):
         # Identify button by last character of button name (which is a number)
         self.selected_widget = self.widgets_list[int(sender.objectName()[-1])-1]
         self.number = int(sender.objectName()[-1])
-        print("widget NUMBER = ", self.number)
         # When get_signals or remove_bleaching are selected, put resulting layer
         # from MESS (segment result) into label_image combobox
         # (exclude cell mask label layer from the options)
@@ -218,10 +201,8 @@ class MainInterface(QMainWindow):
                 #   and https://github.com/napari/napari/blob/main/examples/custom_mouse_functions.py
                 @self.ROIs_label_layer.mouse_double_click_callbacks.append
                 def plot_time_average(layer, event):
-                    print('NUMBER = ', self.number)
                     try:
                         if self.cdw_instance is not None:
-                            print('current canvas widget = ', self.cdw_instance)
                             self.viewer.window.remove_dock_widget(self.cdw_instance)
                         self.viewer.window.remove_dock_widget(self.dw_instance)
                         if 'alt' in event.modifiers: # Pressing ALT while clicking retains plots
@@ -244,13 +225,8 @@ class MainInterface(QMainWindow):
                                                                               area='right')
                         # Add canvas widget
                         self.cdw_instance = self.viewer.window.add_dock_widget(self.canvas_widget, area='right')
-                        # useful for debugging
-                        # print(event)
-                        # print('t,y or line,x or col dclick=',event.position)
-                        # print('ydata,xdata dclick=',layer.data[int(event.position[1]),int(event.position[2])])
                     except IndexError:
                         pass
-
 
  # code based on https://stackoverflow.com/a/23689767/11885372
 class DotDict(dict):
@@ -258,9 +234,3 @@ class DotDict(dict):
     __getattr__ = dict.__getitem__
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
-
-
-# @napari_hook_implementation(specname="napari_experimental_provide_dock_widget")
-# def main_dock_widget():
-#     # you can return either a single widget, or a sequence of widgets
-#     return [MainInterface]

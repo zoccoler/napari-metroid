@@ -16,46 +16,10 @@ import numpy as np
                         Modified FunctionGui widget
    #########################################################################'''
 from magicgui.widgets import FunctionGui
-# Generated from subclassing FunctionGui
-# class Create_Mask_Widget(FunctionGui):
-#     def __init__(self, parent, napari_viewer, function, param_options={}):
-#         self.param_options = param_options
-#         super().__init__(
-#           function,
-#           layout='vertical',
-#           param_options=self.param_options
-#         )
-#         self.main_widget = parent
-#         self.function = function
-#         self.viewer = napari_viewer
-#     def __call__(self):
-#         self.main_widget.outputs = self.main_widget.outputs.fromkeys(self.main_widget.outputs, [])
-#         print('outputs = ', self.main_widget.outputs)
-#         super().__call__()
-
-# # Generated from subclassing FunctionGui
-# class MESS_Widget(FunctionGui):
-#     def __init__(self, parent, napari_viewer, function, param_options={}):
-#         self.param_options = param_options
-#         super().__init__(
-#           function,
-#           layout='vertical',
-#           param_options=self.param_options
-#         )
-#         self.main_widget = parent
-#         self.function = function
-#         self.viewer = napari_viewer
-#     def __call__(self):
-#         self.main_widget.outputs = self.main_widget.outputs.fromkeys(self.main_widget.outputs, [])
-#         print('outputs = ', self.main_widget.outputs)
-#         super().__call__()
-
 from ._bssd import get_noise_power, wavelet_denoise, get_signal_power
 
 def get_components(ROIs_means_corrected,time,inactive_msk,t_sig_onset,
             method = 'ICA',n_comp = 2,wavelet = 'Haar',whiten = True):
-    import numpy as np
-    import matplotlib.pyplot as plt
     if t_sig_onset==0:
         t_sig_onset = None
     if n_comp==1:
@@ -67,37 +31,10 @@ def get_components(ROIs_means_corrected,time,inactive_msk,t_sig_onset,
     if (method=='PCA') | (method=='wPCA'):
         from sklearn.decomposition import PCA
         bss = PCA(n_components=n_comp,whiten=whiten)
-    t_sig_onset_idx = np.argmin(abs(time-t_sig_onset))
 
     components = bss.fit_transform(ROIs_means_corrected)  # Estimate sources
 
     return(components, bss)
-
-    # components_filt = np.zeros_like(components)
-
-
-    # selected_source_idx = denoise_manual_src(n_comp, time, components, t_sig_onset, inactive_msk)
-    # plt.figure(figsize=[15,n_comp*2])
-    # plt.title('Type source numbers that countain signal')
-    # for i in range(n_comp):
-    #     plt.subplot(n_comp,1,i+1)
-    #     plt.plot(time,components[:,i])
-    #     plt.axvline(t_sig_onset,color='k',linestyle='--',alpha=0.3)
-    #     ymax = np.mean(components[inactive_msk,i]) + 2*np.std(components[inactive_msk,i])
-    #     ymin = np.mean(components[inactive_msk,i]) - 2*np.std(components[inactive_msk,i])
-    #     span = plt.axhspan(ymin=ymin,ymax=ymax,alpha=0.1,label='Noise CI95')
-    #     s = 'Source #'+str(i)
-    #     plt.ylabel(s,fontsize='large')
-    #     ymin = 1.8*np.amin(components[:,i])
-    #     ymax = 1.8*np.amax(components[:,i])
-    #     plt.ylim(ymin, ymax)
-    #     plt.legend(handles=[span],loc='upper right')
-    # plt.show()
-
-
-
-    # selected_source_idx = manual_select()
-    # plt.close()
 
 def denoise_manual(ROIs_means_corrected, time, inactive_msk, method, wavelet, components, selected_source_idx, bss):
     components_filt = np.zeros_like(components)
@@ -119,11 +56,6 @@ def denoise_manual(ROIs_means_corrected, time, inactive_msk, method, wavelet, co
 
     return(ROIs_means_filtered, SNR_dB)
 
-
-
-
-
-
 # Generated from subclassing FunctionGui
 class Ui_dock_widget(FunctionGui):
     def __init__(self, parent, napari_viewer, function, param_options={}):
@@ -142,8 +74,6 @@ class Ui_dock_widget(FunctionGui):
     # Overrides the default call function to add a canvas dock widget when a
     #  label in a label layer is doubleclicked
     def __call__(self):
-        # TO DO: clear outputs when create_mask or mess are re-called
-        #           otherwise old data will still be available and plotted
         # Regular call to function, getting outputs here (which are not new layers)
         if self.function.__name__ == 'get_ROIs_average_over_time':
             self.ROIs_avg,self.time_array = super().__call__()
@@ -174,10 +104,6 @@ class Ui_dock_widget(FunctionGui):
                 else:
                     self.inactive_msk_array = None
 
-            # print('param_options = ', self.param_options['autoselect']['choices'])
-            # print(self.main_widget.bssd_widget)
-            # print(self.main_widget.selected_widget)
-            print('AUTOSELECT = ', self.main_widget.bssd_widget.autoselect)
             if self.main_widget.bssd_widget.autoselect.value=='auto':
                 self.ROIs_avg_filtered,self.components,self.selected_source_idx,self.SNR_dB = super().__call__(ROIs_means_corrected = self.ROIs_avg_corrected,
                                                                                                                time = self.time_array,
@@ -189,7 +115,6 @@ class Ui_dock_widget(FunctionGui):
                 self.main_widget.outputs.SNR_dB = self.SNR_dB
                 y_data_to_plot = [self.ROIs_avg, self.ROIs_avg_corrected, self.ROIs_avg_filtered]
             else:
-                print('method = ', self.main_widget.bssd_widget.method, self.main_widget.bssd_widget)
                 self.main_widget.outputs.components, self.bss = get_components(ROIs_means_corrected = self.ROIs_avg_corrected,
                                                                                 time = self.time_array,
                                                                                 inactive_msk = self.inactive_msk_array,
@@ -200,7 +125,6 @@ class Ui_dock_widget(FunctionGui):
                                                                                 whiten = self.main_widget.bssd_widget.whiten.value)
                 self.main_widget.manual_sel_canvas_widget.canvas._add_axes(self.main_widget.outputs.components.shape[1])
                 for i in range(self.main_widget.outputs.components.shape[1]):
-                    print('components_shape = ', self.main_widget.outputs.components.shape)
                     self.main_widget.manual_sel_canvas_widget._update_plot(self.main_widget.outputs.time,
                                                                            self.main_widget.outputs.components[:,i],
                                                                            i,'b',
@@ -215,23 +139,6 @@ class Ui_dock_widget(FunctionGui):
         if self.main_widget.cdw_instance is not None:
             if self.main_widget.bssd_widget.autoselect.value != 'manual':
                 self.main_widget.canvas_widget._update_plots_after_run(self.time_array, y_data_to_plot)
-            # for index, ax in enumerate(self.main_widget.canvas_widget.canvas.fig.axes):
-            #     # If something was drawn, update it
-            #     plotted_labels = self.main_widget.canvas_widget.plotted_signals_info['labels']
-            #     plotted_colors = self.main_widget.canvas_widget.plotted_signals_info['colors']
-            #     if len(plotted_labels)>0:
-            #         # self.main_widget.canvas_widget._clear()
-            #         ax.clear()
-            #         for label, color in zip(plotted_labels, plotted_colors):
-            #             print(label, color)
-            #             self.main_widget.canvas_widget._update_plot(self.time_array,
-            #                                                         self.ROIs_avg[:,label-1],
-            #                                                         index,color,label)
-            #             self.main_widget.canvas_widget.canvas.fig.canvas.draw_idle()
-
-
-
-
 
 '''#########################################################################
                                 Plot widget
@@ -326,7 +233,6 @@ class Canvas_Widget(QtWidgets.QWidget):
         self.src_selection = src_selection
         self.selected_axes_list = []
         self.plotted_signals_info = {'labels' : [], 'colors': []}
-        # To avoid figure to be too much squeezed inside napari
         # To do: adjust better layout (compromise of space between graphic and images from the viewer)
         self.setMinimumSize(QtCore.QSize(100,300))
         self.vboxLayout = QtWidgets.QVBoxLayout()
@@ -356,7 +262,6 @@ class Canvas_Widget(QtWidgets.QWidget):
             if clicked_label not in self.plotted_signals_info['labels']:
                 self.plotted_signals_info['labels'].append(clicked_label)
                 self.plotted_signals_info['colors'].append(color)
-            print('PLTEED LABELS LIST = ', self.plotted_signals_info['labels'])
         self.canvas.fig.axes[canvas_idx].axis('on')
         if canvas_idx>0:
             self.canvas.fig.axes[canvas_idx-1].get_xaxis().set_visible(False)
@@ -368,7 +273,6 @@ class Canvas_Widget(QtWidgets.QWidget):
             plotted_labels = self.plotted_signals_info['labels']
             plotted_colors = self.plotted_signals_info['colors']
             if len(plotted_labels)>0:
-                # self.main_widget.canvas_widget._clear()
                 ax.clear()
                 for label, color in zip(plotted_labels, plotted_colors):
                     print(label, color)
@@ -414,39 +318,4 @@ class Canvas_Widget(QtWidgets.QWidget):
         # remove source selection from interface
         self._clear()
         self.viewer.window.remove_dock_widget(self)
-        # self.close
 
-
-# from qtpy.QtWidgets import QWidget, QHBoxLayout, QPushButton
-# from magicgui import magic_factory
-
-
-# class ExampleQWidget(QWidget):
-#     # your QWidget.__init__ can optionally request the napari viewer instance
-#     # in one of two ways:
-#     # 1. use a parameter called `napari_viewer`, as done here
-#     # 2. use a type annotation of 'napari.viewer.Viewer' for any parameter
-#     def __init__(self, napari_viewer):
-#         super().__init__()
-#         self.viewer = napari_viewer
-
-#         btn = QPushButton("Click me!")
-#         btn.clicked.connect(self._on_click)
-
-#         self.setLayout(QHBoxLayout())
-#         self.layout().addWidget(btn)
-
-#     def _on_click(self):
-#         print("napari has", len(self.viewer.layers), "layers")
-
-
-# @magic_factory
-# def example_magic_widget(img_layer: "napari.layers.Image"):
-#     print(f"you have selected {img_layer}")
-
-
-# # Uses the `autogenerate: true` flag in the plugin manifest
-# # to indicate it should be wrapped as a magicgui to autogenerate
-# # a widget.
-# def example_function_widget(img_layer: "napari.layers.Image"):
-#     print(f"you have selected {img_layer}")
