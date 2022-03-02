@@ -250,7 +250,6 @@ class MyNavigationToolbar(NavigationToolbar):
     def __init__(self, canvas, parent):
         super().__init__(canvas, parent)
         self.canvas = canvas
-        print('TOOLITEMS = ', self.toolitems, type(self.toolitems))
     def save_figure(self):
         # Override default save figure callback function behaviour
         # test saving figure with transparent backgorund
