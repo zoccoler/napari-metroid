@@ -20,14 +20,38 @@ https://github.com/napari/cookiecutter-napari-plugin#getting-started
 and review the napari docs for plugin developers:
 https://napari.org/plugins/stable/index.html
 -->
+## Full preview
+
+Below is a full demonstration of using napari-metroid. It shows the following:
+  * Open sample data;
+  * Create cell mask;
+  * Split mask into ROIs of similar area;
+  * Get ROIs signals over time and plots two of them;
+  * Remove photobleaching;
+  * Remove noise:
+    * Employ ICA to decompose ROIs signals into independent components;
+    * Plot 4 components;
+    * Select the component of interest (source);
+    * Perform inverse transformation with selected source;
+        
+![](figures/napari_metroid_demo.gif)
+
 
 ## Installation
 
-You can install `napari-metroid` via [pip]:
+Download and install [Anaconda](https://www.anaconda.com/products/individual) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html#).
+
+Create a new conda environment:
+
+    conda create -n metroid-env python=3.9
+
+Install napari, e.g. via pip:
+
+    pip install "napari[all]"
+
+Install `napari-metroid` via [pip]:
 
     pip install napari-metroid
-
-
 
 To install latest development version :
 
