@@ -7,7 +7,7 @@
 [![codecov](https://codecov.io/gh/zoccoler/napari-metroid/branch/main/graph/badge.svg)](https://codecov.io/gh/zoccoler/napari-metroid)
 [![napari hub](https://img.shields.io/endpoint?url=https://api.napari-hub.org/shields/napari-metroid)](https://napari-hub.org/plugins/napari-metroid)
 
-This napari plugin creates several regions of interest of similar area over cells in a fluorescence video (2D+time). It then gets ROIs means over time and performs signal denoising: fixes photobleaching and separates signal from noise by means of blind source separation (with or without wavelet filtering).
+This napari plugin is an adaptation of [metroid](https://github.com/zoccoler/metroid). It creates several regions of interest of similar area over cells in a fluorescence video (2D+time). It then gets ROIs means over time and performs signal denoising: fixes photobleaching and separates signal from noise by means of blind source separation (with or without wavelet filtering).
 
 ----------------------------------
 
