@@ -8,34 +8,29 @@ contributions:
     - id: napari-metroid.write_single_image
       python_name: napari_metroid._writer:write_single_image
       title: Save image data with napari METROID
-    - id: napari-metroid.make_sample_data
-      python_name: napari_metroid._sample_data:make_sample_data
-      title: Load sample data from napari METROID 
+    - id: napari-metroid.make_cell1_AP1_data
+      python_name: napari_metroid._sample_data:make_cell1_AP1_data
+      title: Load sample data Cell 1 Video Action Potential from napari METROID
+    - id: napari-metroid.make_cell1_EP1_data
+      python_name: napari_metroid._sample_data:make_cell1_EP1_data
+      title: Load sample data Cell 1 Video Electroporation from napari METROID
     - id: napari-metroid.make_qwidget
-      python_name: napari_metroid._widget:ExampleQWidget
+      python_name: napari_metroid._dock_widget:MainInterface
       title: Make example QWidget
-    - id: napari-metroid.make_magic_widget
-      python_name: napari_metroid._widget:example_magic_widget
-      title: Make example magic widget
-    - id: napari-metroid.make_func_widget
-      python_name: napari_metroid._widget:example_function_widget
-      title: Make example function widget  
   writers:
     - command: napari-metroid.write_multiple
       layer_types: ['image*','labels*']
       filename_extensions: []
     - command: napari-metroid.write_single_image
       layer_types: ['image']
-      filename_extensions: ['.npy'] 
+      filename_extensions: ['.npy']
   sample_data:
-    - command: napari-metroid.make_sample_data
-      display_name: napari METROID
-      key: unique_id.1 
+    - command: napari-metroid.make_cell1_AP1_data
+      display_name: Cell1 Video_Action_Potential
+      key: AP
+    - command: napari-metroid.make_cell1_EP1_data
+      display_name: Cell1 Video_Electroporation
+      key: EP
   widgets:
     - command: napari-metroid.make_qwidget
-      display_name: Example QWidget
-    - command: napari-metroid.make_magic_widget
-      display_name: Example Magic Widget
-    - command: napari-metroid.make_func_widget
-      autogenerate: true
-      display_name: Example Function Widget 
+      display_name: Main Interface
