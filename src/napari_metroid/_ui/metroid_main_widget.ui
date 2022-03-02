@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>276</width>
-    <height>88</height>
+    <width>284</width>
+    <height>75</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
+      <item alignment="Qt::AlignTop">
        <widget class="QToolButton" name="TButton1">
         <property name="minimumSize">
          <size>
@@ -80,7 +80,7 @@ Mask</string>
         </property>
        </widget>
       </item>
-      <item>
+      <item alignment="Qt::AlignTop">
        <widget class="QToolButton" name="TButton2">
         <property name="minimumSize">
          <size>
@@ -137,7 +137,7 @@ shape</string>
         </property>
        </widget>
       </item>
-      <item>
+      <item alignment="Qt::AlignTop">
        <widget class="QToolButton" name="TButton3">
         <property name="minimumSize">
          <size>
@@ -188,7 +188,7 @@ Signals</string>
         </property>
        </widget>
       </item>
-      <item>
+      <item alignment="Qt::AlignTop">
        <widget class="QToolButton" name="TButton4">
         <property name="minimumSize">
          <size>
@@ -239,7 +239,7 @@ Bleaching</string>
         </property>
        </widget>
       </item>
-      <item>
+      <item alignment="Qt::AlignTop">
        <widget class="QToolButton" name="TButton5">
         <property name="minimumSize">
          <size>
@@ -291,19 +291,6 @@ Denoise</string>
        </widget>
       </item>
      </layout>
-    </item>
-    <item>
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
-     </spacer>
     </item>
    </layout>
   </widget>

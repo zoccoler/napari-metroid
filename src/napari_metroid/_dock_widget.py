@@ -13,6 +13,7 @@ from ._remove_bleaching import photob_remove
 from ._bssd import denoise
 from magicgui import magicgui
 from qtpy import QtWidgets
+from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QMainWindow
 from ._widgets import Ui_dock_widget, Canvas_Widget
 from qtpy import uic
@@ -41,13 +42,14 @@ class MainInterface(QMainWindow):
         self.dock_widget_flag = False
 
         self.create_mask_widget =magicgui(create_cell_mask,auto_call=True)
-
+        self.create_mask_widget._widget._layout.setAlignment(Qt.AlignTop)
         self.mess_widget = magicgui(segment,
                                     auto_call=True,
                                     n_ROIs_in={'label': 'Number of inner ROIs:',
                                                         'min': 4, 'step': 2},
                                     n_ROIs_out={'label': 'Number of outer ROIs:',
                                                         'min': 2})
+        self.mess_widget._widget._layout.setAlignment(Qt.AlignTop)
 
         @self.create_mask_widget.called.connect
         @self.mess_widget.called.connect
@@ -122,8 +124,6 @@ class MainInterface(QMainWindow):
             widget = self.main_gui.horizontalLayout.layout().itemAt(i).widget()
             if isinstance(widget,QtWidgets.QToolButton):
                 widget.clicked.connect(self._update_dock_widgets)
-                # print("Connected item ", widget.objectName(),
-                #       "with btn_id number ", i, "to function")
         # instance to dock_widgets
         self.dw_instance = None
         # instance to canvas dock_widgets
@@ -179,14 +179,15 @@ class MainInterface(QMainWindow):
                         else:
                             self.selected_widget.t_sig_end.hide()
         # Add selected dock_widget
+        self.selected_widget._widget._layout.setAlignment(Qt.AlignTop)
         self.dw_instance = self.viewer.window.add_dock_widget(self.selected_widget,
                                                               name = self.widgets_names[self.number-1],
                                                               area='right')
+
         # Add canvas widget
         if self.cdw_instance is not None:
             self.cdw_instance = self.viewer.window.add_dock_widget(self.canvas_widget,
                                                                    area='right')
-        # ########TO DO: resize widgets to appear closer to each other#######
 
         if self.ROIs_label_layer is not None:
             # Add axes matching the number of plots (had to clear axes in order to maintain reference to the same object)
