@@ -20,7 +20,31 @@ https://github.com/napari/cookiecutter-napari-plugin#getting-started
 and review the napari docs for plugin developers:
 https://napari.org/plugins/stable/index.html
 -->
-## Full preview
+
+## Table of Contents
+
+- [A Picture (to save a thousand words)](#a-picture-to-save-a-thousand-words)
+- [Quick Walktrough](#quick-walkthrough)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Open Sample Data](#open-sample-data)
+  - [Open Plugin Main Interface](#open-plugin-main-interface)
+  - [Auto-generate Cell Mask](#auto-generate-cell-mask)
+  - [Split Mask into ROIs](#split-mask-into-rois)
+  - [Get ROI Means over Time](#get-roi-means-over-time)
+  - [Remove Photobleaching](#remove-photobleaching)
+  - [Filter Signals](#filter-signals)
+- [Contributing](#contributing)
+- [License](#license)
+- [Issues](#issues)
+
+## A Picture (to save a thousand words)
+
+Below is the graphical abstract of the Metroid software. This napari plugin works very similarly.
+
+![](https://github.com/zoccoler/metroid/blob/master/Metroid_flowchart.png)
+
+## Quick Walkthrough
 
 Below is a full demonstration of using napari-metroid. It shows the following:
   * Open sample data;
@@ -29,9 +53,9 @@ Below is a full demonstration of using napari-metroid. It shows the following:
   * Get ROIs signals over time and plots two of them;
   * Remove photobleaching;
   * Remove noise:
-    * Employ ICA to decompose ROIs signals into independent components;
+    * Use ICA to decompose ROIs signals into independent components;
     * Plot 4 components;
-    * Select the component of interest (source);
+    * Manually select the component of interest (source);
     * Perform inverse transformation with selected source;
         
 ![](figures/napari_metroid_demo.gif)
@@ -57,6 +81,52 @@ To install latest development version :
 
     pip install git+https://github.com/zoccoler/napari-metroid.git
 
+## Usage
+### Open Sample Data
+
+This plugin comes with two sample videos:
+- Cell1 Video Action Potential: 2D + time fluorescence video of a rat isolated cardiomyocyte labeled with a membrane potential dye upon which an external electrical field pulse is applied.
+- Cell1 Video Electroporation: Same cell, but submitted to a strong external electrical field pulse.
+
+You can open them under "File -> Open Sample -> napari-metroid", as shown below. Both videos are loaded from the [metroid main repository](https://github.com/zoccoler/metroid). To know more about the experimental conditions, please refer to the [original publication](https://doi.org/10.1186/s12859-020-03661-9).
+
+![](figures/load_sample_data.gif)
+
+### Open Plugin Main Interface
+
+![](figures/open_plugin.gif)
+
+### Auto-generate Cell Mask
+
+Metroid can generate cell binary masks automatically by cumulative sum of images until any pixel saturation happens. It then applies Otsu thresholding and removes small objects.
+
+![](figures/auto_create_mask.png)
+
+### Split Mask into ROIs
+
+By default, a cell mask is split into 32 regions of interest (ROIs) in a double-layer fashion: An outer layer of ROIs and an inner layer. 
+The method is solely based on the shape of the cell mask and the main criteria is that ROIs must have similar areas. The number of ROIs in each layer can be editted. 
+
+![](figures/mess.png)
+
+### Get ROI Means over Time
+
+The 'Get Signals' button serves to collect each ROI mean fluorescence over time and enable plotting. There, you can optionally provide the frame rate so that the time axis is properly displayed.
+Double click over a ROI to have its signal plotted. Hold the 'ALT' key to plot multiple signals together.
+
+![](figures/get_signals.gif)
+
+### Remove Photobleaching
+
+Metroid removes photobleaching by curve fitting over time periods that lack the cellular signal (which can be an action potential or an electroporation signal). That is why the 'Transitory' parameter is important. Action potentials are transitory signals whereas electroporation (at least for the duration of this experiment) are not, and the algorithm must be informed about that for proper trend removal.
+
+![](figures/remov_photob.gif)
+
+### Filter Signals
+
+Lastly, cellular signals are filtered by separating signal components with either PCA or ICA (plus optional wavelet filtering). It then chooses one (or several) components and it applies the inverse transform using only the selected components. Metroid can do this component/source selection automatically based on estimations of signal power. Instead, we show below the manual selection procedure, where 4 components are plotted and the user selects one of them.
+
+![](figures/bssd.gif)
 
 ## Contributing
 
