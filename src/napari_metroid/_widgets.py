@@ -328,7 +328,6 @@ class Canvas_Widget(QtWidgets.QWidget):
             if len(plotted_labels)>0:
                 ax.clear()
                 for label, color in zip(plotted_labels, plotted_colors):
-                    print(label, color)
                     self._update_plot(time, y[index][:,label-1], index,
                                       color,label)
                     self.canvas.fig.canvas.draw_idle()
@@ -352,7 +351,6 @@ class Canvas_Widget(QtWidgets.QWidget):
                     self.selected_axes_list.pop(self.selected_axes_list.index(i))
                     event.inaxes.patch.set_facecolor('#00000000')
                     event.canvas.draw()
-                print("Click is in axes ax{}".format(i))
     def onclose(self,event):
         # Get manually selected source(s)
         self.main_widget.outputs.selected_source_idx = self.selected_axes_list

@@ -7,7 +7,7 @@ def guess_t_sig_onset(vmean,time):
     import numpy as np
     d_vmean = abs(np.diff(vmean))
     dmax_idx = np.argmax(d_vmean) +1
-    t_sig_onset = time[dmax_idx]  
+    t_sig_onset = time[dmax_idx]
     return(t_sig_onset, dmax_idx)
 
 def guess_t_sig_duration(vmean, time, t_sig_onset_idx):
@@ -21,7 +21,7 @@ def guess_t_sig_duration(vmean, time, t_sig_onset_idx):
     while(t_sig_active[i]==True):
         i+=1
     t_sig_end_idx = i
-    return(time[t_sig_end_idx],t_sig_end_idx) 
+    return(time[t_sig_end_idx],t_sig_end_idx)
 
 def guess_t_sig_prop(video,time,mask,transitory,t_sig_onset=None):
     '''Tries to find where signal starts and its duration by cell mask mean over time'''
@@ -29,13 +29,13 @@ def guess_t_sig_prop(video,time,mask,transitory,t_sig_onset=None):
     import numpy as np
     video_masked = video*mask
     video_masked_mean = np.mean(video_masked,axis=(1,2))
-    
+
     video_masked_mean_detrend = detrend(video_masked_mean,type='linear')
     if t_sig_onset is None:
         t_sig_onset, t_sig_onset_idx = guess_t_sig_onset(video_masked_mean_detrend,time)
     else:
         t_sig_onset_idx = np.argmin(abs(time-t_sig_onset))
-    
+
     if transitory==True:
         t_sig_end,t_sig_end_idx = guess_t_sig_duration(video_masked_mean_detrend, time, t_sig_onset_idx)
 
@@ -44,7 +44,7 @@ def guess_t_sig_prop(video,time,mask,transitory,t_sig_onset=None):
         return(t_sig_onset, t_sig_onset_idx, t_sig_end)
     else:
         return(t_sig_onset, t_sig_onset_idx,None)
-    
+
 def create_inactive_idx_msk(video,time,mask,transitory=False,t_sig_onset=None,t_sig_end=None):
     '''Create vector masks indicating time periods of inactivity, i.e., where only noise is present'''
     import numpy as np
@@ -52,12 +52,12 @@ def create_inactive_idx_msk(video,time,mask,transitory=False,t_sig_onset=None,t_
     if transitory==None:
         idx_msk = np.ones_like(time,dtype=bool)
         return(idx_msk,t_sig_onset,t_sig_end)
-    
+
     if transitory==False:
         t_sig_end=None
         if (t_sig_onset==None):
             t_sig_onset,t_sig_onset_idx,t_sig_end = guess_t_sig_prop(video, time, mask,transitory)
-            
+
     if transitory==True:
         if (t_sig_onset==None):
             t_sig_onset,t_sig_onset_idx,t_sig_end = guess_t_sig_prop(video, time, mask,transitory)
@@ -79,10 +79,10 @@ def monoexp(x, a, b, d):
 def monoexp_and_line(x, a, b, c, d):
     import numpy as np
     return a * np.exp(-b * x) - (c * x) + d
-def monoexp_line_step(x, a, b, c, d, e,t_sig_onset): 
+def monoexp_line_step(x, a, b, c, d, e,t_sig_onset):
     import numpy as np
     return a * np.exp(-b * x) - (c * x) + d - e * (np.sign(x-t_sig_onset) + 1)
-def monoexp_step(x, a, b, d, e,t_sig_onset): 
+def monoexp_step(x, a, b, d, e,t_sig_onset):
     import numpy as np
     return a * np.exp(-b * x) + d - e * (np.sign(x-t_sig_onset) + 1)
 
@@ -111,14 +111,14 @@ def photob_fit(ROIs_means,time,idx_msk,transitory,t_sig_onset):
         #Calculate residues
         res_linear = photobleaching - p(time[idx_msk])
         total_res_linear = np.sum(abs(res_linear**2))/len(photobleaching)
-        
+
         #Assures y0 is bigger than yf for proper upper boundaries calculation
         if yf>=y0:
             if d>yf:
                 y0 = d
             else:
                 y0 = yf + 1
-                
+
         #If transitory signal
         if ((transitory==True) | (transitory==None)):
             #FIT #2:    monoexp and line fit
@@ -127,7 +127,7 @@ def photob_fit(ROIs_means,time,idx_msk,transitory,t_sig_onset):
             res_expline = photobleaching - monoexp_and_line(time[idx_msk], *popt2)
             total_res_expline = np.sum(abs(res_expline**2))/len(photobleaching)
 
-            #If any fit parameter gets close to its respective upper_boundary, expand upper_boundaries and retries fit   
+            #If any fit parameter gets close to its respective upper_boundary, expand upper_boundaries and retries fit
             if np.all(np.greater(upper_bounds,popt2+0.01*(popt2)))==False:
                 clip_flag = 1
                 while(clip_flag==1):
@@ -153,7 +153,7 @@ def photob_fit(ROIs_means,time,idx_msk,transitory,t_sig_onset):
             popt3, pcov3 = curve_fit(lambda x, a, b, c, d, e: monoexp_line_step(x,a,b,c,d,e,t_sig_onset), time, ROIs_means[:,j], bounds=(0, upper_bounds))
             res_explinestep = ROIs_means[:,j] - monoexp_line_step(time, *np.insert(popt3,len(popt3),t_sig_onset))
             total_res_explinestep = np.sum(abs(res_explinestep**2))/len(ROIs_means[:,j])
-            #If any fit parameter gets close to its respective upper_boundary, expand upper_boundaries and retries fit 
+            #If any fit parameter gets close to its respective upper_boundary, expand upper_boundaries and retries fit
             if np.all(np.greater(upper_bounds,popt3+0.01*(popt3)))==False:
                 clip_flag = 1
                 while(clip_flag==1):
@@ -180,7 +180,7 @@ def photob_fit(ROIs_means,time,idx_msk,transitory,t_sig_onset):
             steps[j] = np.copy(-2*popt3[-1])
             popt3[-1] = 0
             corrected[:,j] = ROIs_means[:,j] - monoexp_line_step(time, *np.insert(popt3,len(popt3),t_sig_onset))
-        #First frame gets median to avoid some cases where exponential function is assigned almost exclusevely to the first frame 
+        #First frame gets median to avoid some cases where exponential function is assigned almost exclusevely to the first frame
         corrected[0,:] = np.mean(corrected[idx_msk,:],axis=0)
 
         corrections=None #obsolete
@@ -199,9 +199,5 @@ def photob_remove(ROIs_means, time, video: ImageData, label_image: LabelsData, t
     inactive_msk,t_sig_onset,t_sig_end = create_inactive_idx_msk(video,time,mask,transitory,t_sig_onset=t_sig_onset,t_sig_end=t_sig_end)
 
     ROIs_means_corrected, corrections = photob_fit(ROIs_means,time,inactive_msk,transitory,t_sig_onset)
-    
-    return(ROIs_means_corrected, inactive_msk, t_sig_onset, t_sig_end)
 
-def test_function(a, b,video: ImageData):
-    print('a = ',a)
-    print('b = ', b)
+    return(ROIs_means_corrected, inactive_msk, t_sig_onset, t_sig_end)

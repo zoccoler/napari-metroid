@@ -8,7 +8,7 @@ def build_contour(msk):
     '''Generates a gray contour from binary masks and extracts the contour'''
     import scipy.ndimage as sm
     import numpy as np
-    
+
     msk_d = sm.binary_dilation(msk,structure=np.ones((3,3)),iterations=1)
     msk_contour_gray = msk_d.astype(int) + msk.astype(int)
     from skimage import measure
@@ -27,7 +27,7 @@ def build_contour(msk):
 def build_time_vector(fr,video_shape):
     import numpy as np
     time = np.cumsum(np.ones(video_shape[0]))
-    time = (time-1)/fr  
+    time = (time-1)/fr
     return(time)
 
 def largestCC(mask):
@@ -61,7 +61,7 @@ def create_inner_mask(mask,area_percent=0.5):
         mask_in = sm.binary_dilation(m_erosion,structure=structE)
     #Gets only largest connected element
     mask_in = largestCC(mask_in)
-    
+
     contourmask = (mask.astype(int)-mask_in.astype(int)).astype(bool)
 
     return(mask_in,contourmask,iterations)
@@ -105,21 +105,21 @@ def rotate(f,theta,shape=None):
     canvas = np.tile(canvas,(3,3))
     cH,cW = canvas.shape
     canvas[maxdim:maxdim+sH,maxdim:maxdim+sW] = f_square
-    
+
     thetarad = np.deg2rad(theta)
-    
+
     #calculate corrective translation after rotation
     t = np.array([0,0],dtype=float)
     t[1] = (cW-1)/2 - ((cW-1)/2)*np.cos(thetarad) + ((cH-1)/2)*np.sin(thetarad)
     t[0] = (cH-1)/2 - ((cH-1)/2)*np.cos(thetarad) - ((cW-1)/2)*np.sin(thetarad)
     #Rotation & translation
-    T = np.array([[np.cos(thetarad),-np.sin(thetarad),t[1]], [np.sin(thetarad),np.cos(thetarad),t[0]], [0,0,1]])  
+    T = np.array([[np.cos(thetarad),-np.sin(thetarad),t[1]], [np.sin(thetarad),np.cos(thetarad),t[0]], [0,0,1]])
 
     y2,x2 = np.indices(canvas.shape)
     n = canvas.size
 
-    yx2 = np.array([ y2.ravel(), 
-                    x2.ravel(), 
+    yx2 = np.array([ y2.ravel(),
+                    x2.ravel(),
                     np.ones(n)])
     #Apply affine
     yx2_float = np.linalg.inv(T).dot(yx2)
@@ -134,7 +134,7 @@ def rotate(f,theta,shape=None):
     x2 = x2.reshape(canvas.shape)
     #inverse mapping
     g = canvas[y2,x2]
-    
+
     if shape==None:
         d_float = np.sqrt(2)*(sH)
         minr_float = (cH - d_float)/2
@@ -156,22 +156,22 @@ def rotate(f,theta,shape=None):
         minc = np.rint(minc_float).astype(int)
         maxr = np.rint(minr_float + sH).astype(int)
         maxc = np.rint(minc_float + sW).astype(int)
-    
+
     g = g[minr:maxr,minc:maxc]
-    
+
     if shape==None:
         return(g)
     else:
         shape = np.array(shape)
         maxdim = np.amax(shape)
-       
+
         minr_float = (g.shape[0] - maxdim)/2
         minc_float = (g.shape[1] - maxdim)/2
         minr = np.rint(minr_float).astype(int)
         minc = np.rint(minc_float).astype(int)
         maxc = minc + shape[1]
         maxr = minr + shape[0]
-        
+
         #Mode Filter
         from PIL import Image
         im = Image.fromarray(g.astype('uint8'),mode='L')
@@ -195,7 +195,7 @@ def align_mask(mask,revert=False,theta=0,orig_shape=None):
     else:
         mask_rot,stack_mask_rot = rotate(mask,theta,orig_shape)
         return(mask_rot,stack_mask_rot)
-    
+
 def change_format(coord, fig2graph = True, nlines = 255):
     '''Change vector format from image to coordinates or vice-a-versa
        Image has y axis downwards and on first column, cause its the line number
@@ -210,12 +210,12 @@ def change_format(coord, fig2graph = True, nlines = 255):
         new_coord[:,1] = coord[:,0]
         new_coord[:,0] = nlines-coord[:,1]
         return(new_coord.astype('uint16'))
-    
+
 def create_contours(mask_aligned, mask_in_aligned, iterations):
     import numpy as np
     import scipy.ndimage as sm
     contours = []
-    
+
     contour_out = build_contour(mask_aligned)
     contour_out = change_format(contour_out, fig2graph=True, nlines = mask_aligned.shape[0])
 
@@ -249,7 +249,7 @@ def arc_length(x, y):
     return arc, L
 
 def get_idx_percentil(x,y,n_regions=100):
-    '''Calculate arc length of contour, divides it in 100 units (percentil) and returns the index of 
+    '''Calculate arc length of contour, divides it in 100 units (percentil) and returns the index of
        each percentil change in arc length'''
     import numpy as np
     arc, L = arc_length(x,y)
@@ -328,7 +328,7 @@ def nearest_point(x,y,u,v,idx,N):
     #Minimum distance (Dmin) and roll quantity (rolls) that led to minimum distance
     Dmin = np.amin(D)
     imin = np.argmin(D)
-    
+
     if imin<0:
         imin = n + imin
     idx_min = idx + (imin - p)
@@ -460,7 +460,7 @@ def flood_fill(bb,y,x,old_color,new_color):
         if xn < bb.shape[1]-1:
             if bb[yn,xn+1]==old_color:
                 bb[yn,xn+1] = new_color  # right
-                q.append([yn,xn+1])    
+                q.append([yn,xn+1])
         if xn > 0:
             if bb[yn,xn-1]==old_color:
                 bb[yn,xn-1] = new_color  # left
@@ -468,8 +468,8 @@ def flood_fill(bb,y,x,old_color,new_color):
         if yn > 0:
             if bb[yn-1,xn]==old_color:
                 bb[yn-1,xn] = new_color  # up
-                q.append([yn-1,xn]) 
-                
+                q.append([yn-1,xn])
+
 def fill_region(contour,shape):
     '''Converts coordinates to image and fills the region'''
     import numpy as np
@@ -485,7 +485,7 @@ def fill_region(contour,shape):
     i = 1
     directions=0
     while good_start==False:
-        
+
         if directions==0:
             directions+=1
             if starting_node_bb[0] < bb.shape[0]-1:
@@ -517,11 +517,11 @@ def fill_region(contour,shape):
             starting_node_bb = starting_node - bbmin
 
     flood_fill(bb,starting_node_bb[0],starting_node_bb[1],False,True)
-    
+
     msk[contour_yx[0,0]:contour_yx[-1,0]+1,np.amin(contour_yx[:,1]):np.amax(contour_yx[:,1])+1] = bb
     return(msk)
 
-def reorder_top_goes_first(slices,label_ROIs):   
+def reorder_top_goes_first(slices,label_ROIs):
     import numpy as np
     nregions=slices.shape[0]
 
@@ -533,11 +533,11 @@ def reorder_top_goes_first(slices,label_ROIs):
     new_label_ROIs[label_ROIs>ROIidx_with_min_ycoord] = new_label_ROIs[label_ROIs>ROIidx_with_min_ycoord] - ROIidx_with_min_ycoord
     new_label_ROIs[label_ROIs<=ROIidx_with_min_ycoord] = new_label_ROIs[label_ROIs<=ROIidx_with_min_ycoord] + (nregions - ROIidx_with_min_ycoord)
     new_label_ROIs[label_ROIs==0] = 0
-    
+
     order_idx = np.arange(nregions,dtype=int)
     order_idx = np.roll(order_idx,-ROIidx_with_min_ycoord)
     reordered_slices = slices[order_idx,:,:]
-    
+
     return(reordered_slices,new_label_ROIs)
 
 ''' Create outer regions '''
@@ -545,9 +545,9 @@ def reorder_top_goes_first(slices,label_ROIs):
 def create_out_ROIs(contours,separation_landmarks,mask_aligned,contourmask,angle,sensib=1,testing=False):
     import numpy as np
     #Creates vectors and calculates outputs for first percentil
-    pout = np.rint(contours[2].shape[0]*0.25*sensib).astype(int) 
+    pout = np.rint(contours[2].shape[0]*0.25*sensib).astype(int)
     p=pout
-    pin = np.rint(contours[0].shape[0]*0.15*sensib).astype(int)  
+    pin = np.rint(contours[0].shape[0]*0.15*sensib).astype(int)
     cum_seg_mask = np.zeros((mask_aligned.shape),dtype=bool)
     label_ROIs = np.zeros((mask_aligned.shape),dtype=int)
     #middle contour first perpendicular
@@ -570,15 +570,15 @@ def create_out_ROIs(contours,separation_landmarks,mask_aligned,contourmask,angle
     v = contours[1][0,1]
 
     x_near_in[0],y_near_in[0],D_in[0],idx_in[0] = nearest_point(
-        np.concatenate((contours[0][-pin:,0],contours[0][0:pin,0])),                      
-        np.concatenate((contours[0][-pin:,1],contours[0][0:pin,1])),        
-        u,v,separation_landmarks[0,3],np.shape(contours[0])[0])         
+        np.concatenate((contours[0][-pin:,0],contours[0][0:pin,0])),
+        np.concatenate((contours[0][-pin:,1],contours[0][0:pin,1])),
+        u,v,separation_landmarks[0,3],np.shape(contours[0])[0])
     idx_in[0] = 0
 
     x_near_out[0],y_near_out[0],D_out[0],idx_out[0] = nearest_point(
         np.concatenate((contours[2][-pout:,0],contours[2][0:pout,0])),
         np.concatenate((contours[2][-pout:,1],contours[2][0:pout,1])),
-        u,v,separation_landmarks[0,4],np.shape(contours[2])[0])             
+        u,v,separation_landmarks[0,4],np.shape(contours[2])[0])
     idx_out[0] = 0
 
     if testing:
@@ -649,7 +649,7 @@ def create_out_ROIs(contours,separation_landmarks,mask_aligned,contourmask,angle
         if idx_out[i] < idx_out[i-1]:
             print('out',idx_out[i],idx_out[i-1])
             x_near_out[i],y_near_out[i],D_out[i],idx_out[i] = x_near_out[i-1],y_near_out[i-1],D_out[i-1],idx_out[i-1]
-        
+
         if testing:
             ax.plot(contours[1][k,0],contours[1][k,1],'o',ms=20,mew=5,color='k')
             ax.plot((x_near_in[i],x_near_out[i]),(y_near_in[i],y_near_out[i]),'--',lw=9,color='red')
@@ -680,13 +680,13 @@ def create_out_ROIs(contours,separation_landmarks,mask_aligned,contourmask,angle
     segment_aligned[N-1,:,:] = seg_mask
     cum_seg_mask = cum_seg_mask + seg_mask
     label_ROIs = label_ROIs + cum_seg_mask
-    label_ROIs[cum_seg_mask] = np.amax(label_ROIs)+1 - label_ROIs[cum_seg_mask] 
+    label_ROIs[cum_seg_mask] = np.amax(label_ROIs)+1 - label_ROIs[cum_seg_mask]
     #Deals with overlapping ROIs
     common_mask = np.logical_and(segment_aligned[N-2,:,:],seg_mask)
     segment_aligned[N-2,common_mask] = False
 
     segment_mask = segment_aligned
-    
+
     segment_mask,label_ROIs = reorder_top_goes_first(segment_mask,label_ROIs)
 
     return(segment_mask,label_ROIs)
@@ -703,15 +703,15 @@ def reorder_slices(slices,label_ROIs):
     order_idx[nregions//2] = nregions-1
 
     order_idx = np.roll(order_idx,nregions//4)
-    
+
     reordered_slices = slices[order_idx,:,:]
-    
+
     indices = np.arange(0,nregions)+1
     order_idx+=1
     new_label_ROIs = np.copy(label_ROIs)
     for j in range(nregions):
         new_label_ROIs[label_ROIs==order_idx[j]] = indices[j]
-    
+
     return(reordered_slices,new_label_ROIs)
 
 def get_slices(mask,mask_rot,angle,nregions=16,testing=False,contours=None):
@@ -719,7 +719,7 @@ def get_slices(mask,mask_rot,angle,nregions=16,testing=False,contours=None):
 
     cum_seg_mask = np.zeros((mask_rot.shape),dtype=bool)
     label_ROIs = np.zeros((mask_rot.shape),dtype=int)
-    
+
     segment = np.zeros((nregions,mask.shape[0],mask.shape[1]),dtype='bool')
     mask_rot_area = np.sum(mask_rot>0)
     region_rot_area = mask_rot_area/nregions
@@ -727,10 +727,10 @@ def get_slices(mask,mask_rot,angle,nregions=16,testing=False,contours=None):
     x0,y0 = get_centroid(mask_rot)
     x0 = x0.astype(int)
 
-    inner_mask_rot = np.copy(mask_rot)    
+    inner_mask_rot = np.copy(mask_rot)
 
     mask_rot_integral = np.cumsum(mask_rot).reshape((mask_rot.shape))*mask_rot
-    
+
     #Gets first region
     region_startline = np.nonzero(mask_rot_integral>0)[0][0]
     region_endline = np.nonzero(mask_rot_integral>((1)*region_rot_area))[0][0]
@@ -746,8 +746,8 @@ def get_slices(mask,mask_rot,angle,nregions=16,testing=False,contours=None):
     segment_rot[-1,region_startline:region_endline+1,:] = 1
     segment_rot[-1,:,:] = segment_rot[-1,:,:]*mask_rot
     inner_mask_rot[region_startline+1:region_endline+1,:] = 0
-    
-    
+
+
     for j in range(2):
         half_mask_rot = np.zeros_like(inner_mask_rot)
         if j==0:
@@ -767,13 +767,13 @@ def get_slices(mask,mask_rot,angle,nregions=16,testing=False,contours=None):
                 region_endline = np.nonzero(half_mask_rot)[0][-1]
             else:
                 region_endline = np.nonzero(half_mask_rot_integral>((i+1)*new_region_rot_area))[0][0]
-                       
-                        
+
+
             segment_rot[k+1,region_startline:region_endline,:] = 1
             segment_rot[k+1,:,:] = segment_rot[k+1,:,:]*half_mask_rot
             cum_seg_mask = cum_seg_mask + segment_rot[k+1,:,:]
             label_ROIs = label_ROIs + cum_seg_mask
-    
+
     cum_seg_mask = cum_seg_mask + segment_rot[-1,:,:]
     label_ROIs = label_ROIs + cum_seg_mask
     label_ROIs[cum_seg_mask] = np.amax(label_ROIs)+1 - label_ROIs[cum_seg_mask]
@@ -796,17 +796,14 @@ def segment(masks: LabelsData, n_ROIs_out: int=16, n_ROIs_in: int=16, video=None
     if len(masks.shape)>2:
         masks = np.amax(masks,axis=0)
     labels = np.zeros_like(masks)
-    
+
     for lb in range(n_labels):
         mask = np.zeros_like(masks)
         mask[masks==lb+1] = masks[masks==lb+1]
-        print(n_labels)
-        print(type(mask))
-        print(mask.shape)
         # ROIs_means,time = None,None
         n_ROIs_total = n_ROIs_out + n_ROIs_in
     #     #Get videos .tif from path
-    
+
         # if video is not None:
         #     #Get video shape
         #     video_shape = video.shape
@@ -817,37 +814,37 @@ def segment(masks: LabelsData, n_ROIs_out: int=16, n_ROIs_in: int=16, video=None
         #         time = build_time_vector(fr, video_shape)
         #     else:
         #         f0 = video
-    
+
         #Create an inner mask and a contour mask
         area_percent = np.around((n_ROIs_in/n_ROIs_total),decimals=2)
-        
-            
+
+
         mask_in, mask_contour, it = create_inner_mask(mask,area_percent)
-        
+
         #Alignes masks to vertical position
         mask_aligned,angle = align_mask(mask)
-    
+
         #Create inner mask aligned
         import scipy.ndimage as sm
         mask_in_aligned = sm.binary_erosion(mask_aligned,structure=np.ones((3,3)),iterations=it)
         mask_in_aligned = largestCC(mask_in_aligned)
-        
+
         #Create contour_out, contour_mid and contour_in from mask and inner mask
         contours, contourmask_aligned = create_contours(mask_aligned, mask_in_aligned, it)
-    
+
         #Divide contours in equal lengths and create a vector storing separation landmarks for later ROI design
         separation_landmarks = create_separation_landmarks(contours,mask_aligned,n_ROIs_out)
-    
+
         #Generates outter ROIs
         segments, label_ROIs_out = create_out_ROIs(contours,separation_landmarks,mask_aligned,mask_contour,angle,sensib)
-    
+
         #Generates inner ROIs
         angle_in = angle
         slices,label_ROIs_in = get_slices(mask_in,mask_in_aligned,angle_in,nregions = n_ROIs_in)
-        
+
         label_ROIs_in[label_ROIs_in>0] = label_ROIs_in[label_ROIs_in>0] + n_ROIs_out
         label_ROIs = label_ROIs_out + label_ROIs_in
-       
+
         #Rotate mask (and ROIs) back to original angle
         label_ROIs,stack_ROIs = align_mask(label_ROIs,revert=True,theta=angle-90,orig_shape=mask.shape)
         #Keep just pixels in the original mask (i.e. exclude extra pixels usually added after rotations)
@@ -856,7 +853,7 @@ def segment(masks: LabelsData, n_ROIs_out: int=16, n_ROIs_in: int=16, video=None
         for i in range(stack_ROIs.shape[0]):
             stack_ROIs[i][mask==False] = False
         labels += label_ROIs
-        
+
         labels[label_ROIs>0] += lb*n_ROIs_total
 
     # if video is not None:
