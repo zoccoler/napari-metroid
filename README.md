@@ -40,6 +40,8 @@ https://napari.org/plugins/stable/index.html
 
 ## A Picture (to save a thousand words)
 
+Below is the graphical abstract of the Metroid software. This napari plugin works very similarly.
+
 ![](https://github.com/zoccoler/metroid/blob/master/Metroid_flowchart.png)
 
 ## Quick Walkthrough
@@ -109,9 +111,22 @@ The method is solely based on the shape of the cell mask and the main criteria i
 
 ### Get ROI Means over Time
 
+The 'Get Signals' button serves to collect each ROI mean fluorescence over time and enable plotting. There, you can optionally provide the frame rate so that the time axis is properly displayed.
+Double click over a ROI to have its signal plotted. Hold the 'ALT' key to plot multiple signals together.
+
+![](figures/get_signals.gif)
+
 ### Remove Photobleaching
 
+Metroid removes photobleaching by curve fitting over time periods that lack the cellular signal (which can be an action potential or an electroporation signal). That is why the 'Transitory' parameter is important. Action potentials are transitory signals whereas electroporation (at least for the duration of this experiment) are not, and the algorithm must be informed about that for proper trend removal.
+
+![](figures/remov_photob.gif)
+
 ### Filter Signals
+
+Lastly, cellular signals are filtered by separating signal components with either PCA or ICA (plus optional wavelet filtering). It then chooses one (or several) components and it applies the inverse transform using only the selected components. Metroid can do this component/source selection automatically based on estimations of signal power. Instead, we show below the manual selection procedure, where 4 components are plotted and the user selects one of them.
+
+![](figures/bssd.gif)
 
 ## Contributing
 
