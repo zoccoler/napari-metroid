@@ -21,9 +21,14 @@ and review the napari docs for plugin developers:
 https://napari.org/plugins/stable/index.html
 -->
 
+## A Picture (to boil down a thousand words)
+
+Below is the graphical abstract of the Metroid software. This napari plugin works very similarly.
+
+![](https://github.com/zoccoler/metroid/blob/master/Metroid_flowchart.png)
+
 ## Table of Contents
 
-- [A Picture (to boil down a thousand words)](#a-picture-to-boil-down-a-thousand-words)
 - [Quick Walktrough](#quick-walkthrough)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -38,12 +43,6 @@ https://napari.org/plugins/stable/index.html
 - [Contributing](#contributing)
 - [License](#license)
 - [Issues](#issues)
-
-## A Picture (to boil down a thousand words)
-
-Below is the graphical abstract of the Metroid software. This napari plugin works very similarly.
-
-![](https://github.com/zoccoler/metroid/blob/master/Metroid_flowchart.png)
 
 ## Quick Walkthrough
 
