@@ -34,6 +34,7 @@ https://napari.org/plugins/stable/index.html
   - [Get ROI Means over Time](#get-roi-means-over-time)
   - [Remove Photobleaching](#remove-photobleaching)
   - [Filter Signals](#filter-signals)
+  - [Save outputs](#save-outputs)
 - [Contributing](#contributing)
 - [License](#license)
 - [Issues](#issues)
@@ -124,9 +125,14 @@ Metroid removes photobleaching by curve fitting over time periods that lack the 
 
 ### Filter Signals
 
-Lastly, cellular signals are filtered by separating signal components with either PCA or ICA (plus optional wavelet filtering). It then chooses one (or several) components and it applies the inverse transform using only the selected components. Metroid can do this component/source selection automatically based on estimations of signal power. Instead, we show below the manual selection procedure, where 4 components are plotted and the user selects one of them.
+Cellular signals are filtered by separating signal components with either PCA or ICA (plus optional wavelet filtering). It then chooses one (or several) components and it applies the inverse transform using only the selected components. Metroid can do this component/source selection automatically based on estimations of signal power. Instead, we show below the manual selection procedure, where 4 components are plotted and the user selects one of them.
 
 ![](figures/bssd.gif)
+
+### Save Outputs
+
+Raw, corrected and filtered signals, as well as time and components, are arranged in a table with values for each time point. The table is displayed as a widget after each Run button click. Estimated signal-to-noise (SNR) in dB for each label/ROI are also provided (in this case, each line corresponds to a ROI, not a time point).
+The user can save these data by clicking on the buttons "Copy to clipboard" or "Save as csv...".
 
 ## Contributing
 
