@@ -134,6 +134,8 @@ Cellular signals are filtered by separating signal components with either PCA or
 Raw, corrected and filtered signals, as well as time and components, are arranged in a table with values for each time point. The table is displayed as a widget after each Run button click. Estimated signal-to-noise (SNR) in dB for each label/ROI are also provided (in this case, each line corresponds to a ROI, not a time point).
 The user can save these data by clicking on the buttons "Copy to clipboard" or "Save as csv...".
 
+![](figures/table_widget.png)
+
 ## Contributing
 
 Contributions are very welcome. Tests can be run with [tox], please ensure
