@@ -12,6 +12,10 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 from matplotlib.figure import Figure
 from qtpy import QtWidgets, QtCore
 import numpy as np
+import pandas as pd
+import napari
+import copy
+from napari_skimage_regionprops import TableWidget
 
 '''#########################################################################
                         Modified FunctionGui widget
@@ -164,6 +168,19 @@ class Ui_dock_widget(FunctionGui):
                     self.main_widget.manual_sel_canvas_widget.canvas.mpl_connect(
                         'button_press_event',
                         self.main_widget.manual_sel_canvas_widget.onclick)
+        # Select a few headers to display in a table
+        table_output_headers = ('time', 'raw_signals', 'corrected', 'filtered',
+                                'components', 'SNR_dB')
+        # update table content
+        table_output_data = {}
+        for k,v in self.main_widget.outputs.items():
+            if k in table_output_headers:
+                table_output_data[k] = v
+        # Add table content to label layer metadata
+        self.viewer.layers['segment result'].metadata = table_output_data
+        # Dock table widget to viewer
+        add_table(self.viewer.layers['segment result'], self.viewer)
+
         # If canvas widget was called, update it
         if self.main_widget.cdw_instance is not None:
             if self.main_widget.bssd_widget.autoselect.value != 'manual':
@@ -379,3 +396,95 @@ class Canvas_Widget(QtWidgets.QWidget):
         # Remove canvas widget from napari
         self.viewer.window.remove_dock_widget(self)
 
+'''#########################################################################
+                                Table widget
+   #########################################################################'''
+# Code below modified from _table.py file from napari-skimage-regionprops
+# plugin
+class My_TableWidget(TableWidget):
+    def __init__(self, layer: napari.layers.Layer):
+        self._metadata = copy.deepcopy(layer.metadata)
+        super().__init__(layer)
+        self.set_content(self._metadata)
+    def set_content(self, table : dict):
+        """
+        Overwrites the content of the table with the content of a given dictionary.
+        """
+        if table is None:
+            table = {}
+        table = split_label_signals(table)
+        # Workaround to fix wrong row display in napari status bar
+        # https://github.com/napari/napari/issues/4250
+        # https://github.com/napari/napari/issues/2596
+        if "label" in table.keys() and "index" not in table.keys():
+            table["index"] = table["label"]
+
+        self._table = copy.deepcopy(table)
+
+        self._layer.metadata = table
+
+        self._view.clear()
+        table =  self._table
+
+        try:
+            self._view.setRowCount(len(next(iter(table.values()))))
+            self._view.setColumnCount(len(table))
+        except StopIteration:
+            pass
+        for i, column in enumerate(table.keys()):
+            self._view.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(column))
+            for j, value in enumerate(table.get(column)):
+                self._view.setItem(j, i, QtWidgets.QTableWidgetItem(str(value)))
+    def _copy_clicked(self):
+        df = pd.DataFrame(dict([ (k,pd.Series(v, dtype=float)) for k,v in self._table.items() ]))
+        # Drop whole columns with only NaNs, and replaces remaining NaNs with empty string
+        df.dropna(how='all', axis='columns').fillna(value='')
+        df.to_clipboard()
+    def _save_clicked(self, event=None, filename=None):
+        if filename is None: filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save as csv...", ".", "*.csv")
+        df = pd.DataFrame(dict([ (k,pd.Series(v, dtype=float)) for k,v in self._table.items() ]))
+        # Drop whole columns with only NaNs, and replaces remaining NaNs with empty string
+        df.dropna(how='all', axis='columns').fillna(value='')
+        df.to_csv(filename)
+
+def get_table(labels_layer: napari.layers.Layer, viewer:napari.Viewer) -> My_TableWidget:
+    """
+    Searches inside a viewer for a given table and returns it. If it cannot find it,
+    it will return None.
+    """
+    for widget in list(viewer.window._dock_widgets.values()):
+        potential_table_widget = widget.widget()
+        if isinstance(potential_table_widget, My_TableWidget):
+            return potential_table_widget
+    return None
+
+def add_table(labels_layer: napari.layers.Layer, viewer:napari.Viewer) -> My_TableWidget:
+    """
+    Add a table to a viewer and return the table widget. The table will show the `properties` of the given layer.
+    """
+
+    dock_widget = get_table(labels_layer, viewer)
+    if dock_widget is None:
+        dock_widget = My_TableWidget(labels_layer)
+        # add widget to napari
+        viewer.window.add_dock_widget(dock_widget, area='right', name="Metadata of " + labels_layer.name)
+    else:
+        dock_widget.set_content(labels_layer.metadata)
+        if not dock_widget.parent().isVisible():
+            dock_widget.parent().setVisible(True)
+
+    return dock_widget
+
+def split_label_signals(outputs):
+    '''Split values in a dictionnary whose equivalent numpy shape is equal to 2
+    into several separated key/value pairs'''
+    split_outputs = []
+    for key,value in outputs.items():
+        value_as_array = np.asarray(value)
+        if len(value_as_array.shape) == 2:
+            for i in range(value_as_array.shape[1]):
+                split_outputs.append((key + '_label_' + str(i),
+                                      value_as_array[:,i].tolist()))
+        else:
+            split_outputs.append((key,value))
+    return(dict(split_outputs))

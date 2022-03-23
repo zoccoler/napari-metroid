@@ -25,10 +25,11 @@ import napari
                                 Main Interface
    #########################################################################'''
 class MainInterface(QMainWindow):
-    outputs = {'raw_signals' : [], 'time' : [], 'corrected' : [],
-               'filtered' : [], 'inactive_msk' : [], 't_sig_onset' : [],
-               't_sig_end' : [], 'components' : [], 'selected_source_idx' : [],
-               'SNR_dB' : []}
+    outputs = {'time' : [], 'raw_signals' : [], 'corrected' : [],
+               'filtered' : [], 'inactive_msk' : [], 'components' : [],
+               'SNR_dB' : [], 't_sig_onset' : [], 't_sig_end' : [],
+               'selected_source_idx' : []
+               }
 
     def __init__(self, napari_viewer):
         super().__init__()

@@ -16,10 +16,9 @@ def create_cell_mask(video: ImageData) -> LabelsData:
     # Checks if there is an existing image layer
     if video is None:
         return None
-    
+
     #get video/image type
     ptype = str(video.dtype)
-    print(ptype)
     # Checks if image is of integer type
     if ptype.startswith('uint'):
         pixel_depth = int(ptype[4:])
@@ -27,19 +26,19 @@ def create_cell_mask(video: ImageData) -> LabelsData:
         warnings.warn("Image must be integer and non-binary",UserWarning)
         # print("Image must be of integer type")
         return None
-    
+
     # Checks if single image or video (image stack)
     if len(video.shape)>2:
         # Sums pixel values element-wise until a saturation occurs
-        
+
         #estimate number of pixel additions until saturation
         f0mean = np.mean(video[0])
         temp = (2**pixel_depth)//f0mean
         n_sum_til_saturation=temp.astype(int)
-    
+
         f_sat = np.zeros_like(video[0],dtype='uint32')
         # b_sat = np.zeros_like(video[0],dtype='bool')
-    
+
         #add first images pixel by pixel until some pixels saturate
         for j in range(n_sum_til_saturation-1):
             f_sat = np.add(f_sat,video[j])
@@ -49,11 +48,11 @@ def create_cell_mask(video: ImageData) -> LabelsData:
         f_sat[sat_values] = (2**pixel_depth)-1
         #Small blur
         f_sat = sm.gaussian_filter(f_sat,sigma=2)
-    
+
         f_sat = f_sat.astype(video.dtype)
     else:
         f_sat = video
-    
+
     thresh = threshold_otsu(f_sat)
     mask = f_sat > thresh
     #Get image dimensions
@@ -63,8 +62,8 @@ def create_cell_mask(video: ImageData) -> LabelsData:
     # # Remove artifacts connected to image border
     # mask = clear_border(mask)
     return(mask)
-    
-    
+
+
     # if len(video.shape)>2: #Get only videos, single 8/16-bit images are not included
     #     if video.shape[-1]>3: # rgb images are not included (as a side-effect videos of up to 3 frames are not included)
     #         print(video.shape)
@@ -74,4 +73,3 @@ def create_cell_mask(video: ImageData) -> LabelsData:
     #         print("Erro2")
     # else:
     #     print("Error1")
-    
