@@ -23,7 +23,7 @@ https://napari.org/plugins/stable/index.html
 
 ## Table of Contents
 
-- [A Picture (to save a thousand words)](#a-picture-to-save-a-thousand-words)
+- [A Picture (to boil down a thousand words)](#a-picture-to-boil-down-a-thousand-words)
 - [Quick Walktrough](#quick-walkthrough)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -39,7 +39,7 @@ https://napari.org/plugins/stable/index.html
 - [License](#license)
 - [Issues](#issues)
 
-## A Picture (to save a thousand words)
+## A Picture (to boil down a thousand words)
 
 Below is the graphical abstract of the Metroid software. This napari plugin works very similarly.
 
