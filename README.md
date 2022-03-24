@@ -41,6 +41,7 @@ Below is the graphical abstract of the Metroid software. This napari plugin work
   - [Filter Signals](#filter-signals)
   - [Save outputs](#save-outputs)
 - [Contributing](#contributing)
+- [Citing napari-metroid](#citing-napari-metroid)
 - [License](#license)
 - [Issues](#issues)
 
@@ -139,6 +140,12 @@ The user can save these data by clicking on the buttons "Copy to clipboard" or "
 
 Contributions are very welcome. Tests can be run with [tox], please ensure
 the coverage at least stays the same before you submit a pull request.
+
+## Citing napari-metroid
+
+If you use this plugin in your research, please be kind to cite the original paper below:
+
+Zoccoler, M., de Oliveira, P.X. METROID: an automated method for robust quantification of subcellular fluorescence events at low SNR. BMC Bioinformatics 21, 332 (2020). https://doi.org/10.1186/s12859-020-03661-9
 
 ## License
 
