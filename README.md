@@ -25,7 +25,7 @@ https://napari.org/plugins/stable/index.html
 
 Below is the graphical abstract of the Metroid software. This napari plugin works very similarly.
 
-![](https://github.com/zoccoler/metroid/raw/master/Metroid_flowchart.png)
+![](https://github.com/zoccoler/metroid/blob/master/Metroid_flowchart.png)
 
 ## Table of Contents
 
@@ -60,7 +60,6 @@ Below is a full demonstration of using napari-metroid. It shows the following:
     * Perform inverse transformation with selected source;
         
 ![](https://github.com/zoccoler/napari-metroid/raw/main/figures/napari_metroid_demo.gif)
-
 
 ## Installation
 
