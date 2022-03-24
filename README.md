@@ -25,7 +25,7 @@ https://napari.org/plugins/stable/index.html
 
 Below is the graphical abstract of the Metroid software. This napari plugin works very similarly.
 
-![](https://github.com/zoccoler/metroid/raw/master/Metroid_flowchart.png)
+![](https://github.com/zoccoler/metroid/blob/master/Metroid_flowchart.png)
 
 ## Table of Contents
 
@@ -58,7 +58,7 @@ Below is a full demonstration of using napari-metroid. It shows the following:
     * Manually select the component of interest (source);
     * Perform inverse transformation with selected source;
         
-![](https://github.com/zoccoler/metroid/raw/master/figures/napari_metroid_demo.gif)
+![](figures/napari_metroid_demo.gif)
 
 
 ## Installation
@@ -90,50 +90,50 @@ This plugin comes with two sample videos:
 
 You can open them under "File -> Open Sample -> napari-metroid", as shown below. Both videos are loaded from the [metroid main repository](https://github.com/zoccoler/metroid). To know more about the experimental conditions, please refer to the [original publication](https://doi.org/10.1186/s12859-020-03661-9).
 
-![](https://github.com/zoccoler/metroid/raw/master/figures/load_sample_data.gif)
+![](figures/load_sample_data.gif)
 
 ### Open Plugin Main Interface
 
-![](https://github.com/zoccoler/metroid/raw/master/figures/open_plugin.gif)
+![](figures/open_plugin.gif)
 
 ### Auto-generate Cell Mask
 
 Metroid can generate cell binary masks automatically by cumulative sum of images until any pixel saturation happens. It then applies Otsu thresholding and removes small objects.
 
-![](https://github.com/zoccoler/metroid/raw/master/figures/auto_create_mask.png)
+![](figures/auto_create_mask.png)
 
 ### Split Mask into ROIs
 
 By default, a cell mask is split into 32 regions of interest (ROIs) in a double-layer fashion: An outer layer of ROIs and an inner layer. 
 The method is solely based on the shape of the cell mask and the main criteria is that ROIs must have similar areas. The number of ROIs in each layer can be editted. 
 
-![](https://github.com/zoccoler/metroid/raw/master/figures/mess.png)
+![](figures/mess.png)
 
 ### Get ROI Means over Time
 
 The 'Get Signals' button serves to collect each ROI mean fluorescence over time and enable plotting. There, you can optionally provide the frame rate so that the time axis is properly displayed.
 Double click over a ROI to have its signal plotted. Hold the 'ALT' key to plot multiple signals together.
 
-![](https://github.com/zoccoler/metroid/raw/master/figures/get_signals.gif)
+![](figures/get_signals.gif)
 
 ### Remove Photobleaching
 
 Metroid removes photobleaching by curve fitting over time periods that lack the cellular signal (which can be an action potential or an electroporation signal). That is why the 'Transitory' parameter is important. Action potentials are transitory signals whereas electroporation (at least for the duration of this experiment) are not, and the algorithm must be informed about that for proper trend removal.
 
-![](https://github.com/zoccoler/metroid/raw/master/figures/remov_photob.gif)
+![](figures/remov_photob.gif)
 
 ### Filter Signals
 
 Cellular signals are filtered by separating signal components with either PCA or ICA (plus optional wavelet filtering). It then chooses one (or several) components and it applies the inverse transform using only the selected components. Metroid can do this component/source selection automatically based on estimations of signal power. Instead, we show below the manual selection procedure, where 4 components are plotted and the user selects one of them.
 
-![](https://github.com/zoccoler/metroid/raw/master/figures/bssd.gif)
+![](figures/bssd.gif)
 
 ### Save Outputs
 
 Raw, corrected and filtered signals, as well as time and components, are arranged in a table with values for each time point. The table is displayed as a widget after each Run button click. Estimated signal-to-noise (SNR) in dB for each label/ROI are also provided (in this case, each line corresponds to a ROI, not a time point).
 The user can save these data by clicking on the buttons "Copy to clipboard" or "Save as csv...".
 
-![](https://github.com/zoccoler/metroid/raw/master/figures/table_widget.png)
+![](figures/table_widget.png)
 
 ## Contributing
 
