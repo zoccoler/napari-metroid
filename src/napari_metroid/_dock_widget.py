@@ -34,9 +34,7 @@ class MainInterface(QMainWindow):
     def __init__(self, napari_viewer):
         super().__init__()
         self.viewer = napari_viewer
-        print('Parent path = ', str(Path(__file__).parent))
         self.UI_FILE = str(Path(__file__).parent / r"_ui/metroid_main_widget.ui")  # path to .ui file
-        print('UI_FILE = ', self.UI_FILE)
         self.main_gui = uic.loadUi(self.UI_FILE, self)           # load QtDesigner .ui file
 
         self.outputs = DotDict(self.outputs)
