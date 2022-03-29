@@ -67,7 +67,7 @@ Download and install [Anaconda](https://www.anaconda.com/products/individual) or
 
 Create a new conda environment:
 
-    conda create -n metroid-env python=3.9
+    conda create -n metroid-env python=3.8
 
 Install napari, e.g. via pip:
 
